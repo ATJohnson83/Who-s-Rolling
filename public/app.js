@@ -1,7 +1,14 @@
+
+
 // ---------- global variables ----------
 
-let playerCount;
+let playerCount = 0;
 let playerScores = [];
+let netWorth = '';
+$('#show-celeb').hide();
+
+// Takes Celeb Name input, converts to lowercase, adds dashes in between spaces, checks to make sure the celeb name has the random letter as the first letter of one of the namespace,
+// if it does make ajax call to backend to get celeb info from scraped data.
 
 $('#get-name').on('click', () => {
   let celebName = $('#name').val();
@@ -21,21 +28,27 @@ $('#get-name').on('click', () => {
       const imgURL = data.imgURL;
       $('#check-name').html(name);
       $('#check-img').attr('src', imgURL);
+      $('#show-name').html(name);
+      $('#show-img').attr('src', imgURL);
     });
   }
 })
+
+// If User confirms celebrity, retrieve the net worth and print to dom, 
+// if not empty input fields and request user for another celeb input
 
 $('#yes').on('click', () => {
   $.ajax({
     method: "GET",
     url: "/celeb_net_worth/"
   }).done((data, status) => {
-    const netWorth = data.netWorth;
-    printData(netWorth);
+    netWorth = data.netWorth;
   })
+  $("#celeb-pick").modal('hide');
+  $('#show-celeb').show();
 })
 
-const printData = (netWorth) => {
+const printData = () => {
   $('#net-worth').html(netWorth);
 }
 
@@ -44,6 +57,8 @@ $('#no').on('click', () => {
   $('#check-name').empty();
   alert("pick another celebrity");
 })
+
+// Takes number of selected players,sets to global var (playerCount), clears player Div, and prints a card for each player
 
 const playerSetup = (num) => {
   playerCount = num;
